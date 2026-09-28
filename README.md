@@ -1,41 +1,60 @@
-# Time Capture — Aderant intern briefing demo
+# Time Capture — testable mock (not Aderant Expert)
 
-给明天 Albany 面试用的小产品：律师工时录入。不是完整 Expert，只做 briefing 里会开错账单的那几条。
+Small **C# / ASP.NET Core** demo of a law-firm time-entry flow. Built to practise what a Test Automation intern would automate: **wrong matter = wrong invoice**, duplicate save under latency, PA restrictions, bad integration IDs.
 
-## 跑起来
+This is a **mock target** plus **automated tests**. It is not Aderant Expert and not a production billing product.
 
-```powershell
-cd D:\求职\aderant-time-capture
-dotnet run --project src\TimeCapture.Web
+## What to look at (GitHub)
+
+| Path | What it is |
+|---|---|
+| `src/TimeCapture.Web/` | Server + web form (`data-testid` hooks) |
+| `src/TimeCapture.Desktop/` | Tiny **WPF** window; Save posts to the same API |
+| `tests/TimeCapture.Tests/` | Playwright UI + HTTP API tests (NUnit) |
+| `tests/TimeCapture.Desktop.Tests/` | FlaUI finds `AutomationId` and clicks Save |
+
+```text
+Lawyer UI  ──►  POST /api/entries  ──►  TimeEntryStore (rules)
+  web form         same door              reject bad bills
+  WPF window
 ```
 
-浏览器打开 http://localhost:5288
+## Run
 
-## 跑测试（Playwright + 接口）
+Web (needs a browser):
 
 ```powershell
-cd D:\求职\aderant-time-capture
+dotnet run --project src/TimeCapture.Web
+```
+
+Open http://localhost:5288
+
+Desktop + server: start the web command first, then:
+
+```powershell
+dotnet run --project src/TimeCapture.Desktop
+```
+
+Tests (stop `dotnet run` first so the `.exe` is not locked):
+
+```powershell
 dotnet test
 ```
 
-如果缺浏览器：
+If Playwright browsers are missing:
 
 ```powershell
-pwsh tests\TimeCapture.Tests\bin\Debug\net10.0\playwright.ps1 install
+powershell -File tests/TimeCapture.Tests/bin/Debug/net10.0/playwright.ps1 install
 ```
 
-## 面试可以点的
+## Tests in one glance
 
-1. 律师 Alice 给 Northwind / M-1001 记 0.5h → 列表出现，带 UTC。  
-2. 不选 matter 点 Save → 报错，不写数据。  
-3. Save 后按钮会灰（模拟延迟），同一 idempotency key 不会变成两条。  
-4. PA 模式选 John Smith → 拒绝（助理不能给任意律师录）。  
-5. 接口：未知律师的 Integration 写入会被拒。
+**LearnChain** (`backend.Tests`, xUnit): unit tests on XP / due dates; controller tests against a test database. Product is a habit app.
 
-## 和 briefing 的对应
+**This repo** (NUnit): invoice-risk paths on a fake time-entry API + Playwright on the form + one WPF click-through.
 
-- `data-testid` 钩子：timekeeper、client-search、matter-select、duration、activity-category、narrative、save-entry、todays-entries  
-- 可见 label，方便 Playwright `GetByLabel` / 不爱电脑的律师  
-- 时长 0.1 小时单位；comment 必填  
-- 时区只影响显示，时长不变  
-- Leapwork 没做桌面壳；Web 用 Playwright。现场可以说 WPF 会用同名 AutomationId。
+Same language family (**C# / .NET 10**). Different question: LearnChain asks “did the habit logic work?”; this repo asks “would finance invoice the wrong client?”
+
+## Interview one-liner
+
+Web hooks: `data-testid`. Desktop hooks: `AutomationProperties.AutomationId` (same names). Expert in a firm would use **Leapwork** on those AutomationIds. I have not used Leapwork in production.
