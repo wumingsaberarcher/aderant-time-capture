@@ -52,7 +52,9 @@ public class DesktopSaveTests
         var seen = false;
         for (var i = 0; i < 25; i++)
         {
-            if ((list.Name ?? "").Contains("Reviewed discovery from desktop"))
+            var names = list.FindAllDescendants(cf => cf.ByControlType(FlaUI.Core.Definitions.ControlType.ListItem))
+                .Select(item => item.Name ?? "");
+            if (names.Any(name => name.Contains("Reviewed discovery from desktop")))
             {
                 seen = true;
                 break;

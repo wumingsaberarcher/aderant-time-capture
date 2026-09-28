@@ -1,27 +1,113 @@
 <Window x:Class="TimeCapture.Desktop.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Time capture desktop (talks to the server)"
-        Width="440" Height="280"
+        Title="Time capture"
+        Width="520" Height="560"
         AutomationProperties.AutomationId="time-capture-window">
-  <!-- Injecting tests = giving the control a stable name the test can find.
-       Web uses data-testid. Desktop WPF uses AutomationId. Same job. -->
-  <StackPanel Margin="16">
-    <TextBlock TextWrapping="Wrap" Margin="0,0,0,8"
-               Text="This window is the desktop client. Save still goes to the same /api/entries server as the webpage." />
-    <Label Content="Comment — what exactly occurred" Target="{Binding ElementName=Narrative}" />
+  <!--
+    Standard WPF window:
+    - Grid = rows and columns (like a form)
+    - Label Target = which box this label belongs to (keyboard + a11y)
+    - x:Name = C# code-behind can say Narrative.Text
+    - AutomationId = tests / Leapwork find the control (same job as data-testid on the web)
+  -->
+  <Grid Margin="16">
+    <Grid.ColumnDefinitions>
+      <ColumnDefinition Width="160" />
+      <ColumnDefinition Width="*" />
+    </Grid.ColumnDefinitions>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="88" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="Auto" />
+      <RowDefinition Height="*" />
+    </Grid.RowDefinitions>
+
+    <CheckBox x:Name="PaMode"
+              Grid.ColumnSpan="2"
+              Margin="0,0,0,12"
+              Content="Recording as personal assistant"
+              AutomationProperties.AutomationId="pa-mode" />
+
+    <Label Grid.Row="1" Content="Who the lawyer is" Target="{Binding ElementName=Timekeeper}" />
+    <ComboBox x:Name="Timekeeper"
+              Grid.Row="1" Grid.Column="1"
+              Margin="0,0,0,8"
+              AutomationProperties.AutomationId="timekeeper">
+      <ComboBoxItem Content="Alice Chen (Pacific/Auckland)" Tag="alice" IsSelected="True" />
+      <ComboBoxItem Content="John Smith (Europe/London)" Tag="john" />
+    </ComboBox>
+
+    <Label Grid.Row="2" Content="Client" Target="{Binding ElementName=Client}" />
+    <ComboBox x:Name="Client"
+              Grid.Row="2" Grid.Column="1"
+              Margin="0,0,0,8"
+              AutomationProperties.AutomationId="client-search"
+              SelectionChanged="Client_Changed">
+      <ComboBoxItem Content="Northwind Legal" Tag="northwind" IsSelected="True" />
+      <ComboBoxItem Content="Contoso Holdings" Tag="contoso" />
+    </ComboBox>
+
+    <Label Grid.Row="3" Content="Matter" Target="{Binding ElementName=Matter}" />
+    <ComboBox x:Name="Matter"
+              Grid.Row="3" Grid.Column="1"
+              Margin="0,0,0,8"
+              AutomationProperties.AutomationId="matter-select" />
+
+    <Label Grid.Row="4" Content="Hours (0.1 = 6 minutes)" Target="{Binding ElementName=Duration}" />
+    <TextBox x:Name="Duration"
+             Grid.Row="4" Grid.Column="1"
+             Margin="0,0,0,8"
+             Text="0.5"
+             AutomationProperties.AutomationId="duration" />
+
+    <Label Grid.Row="5" Content="Time-activity category" Target="{Binding ElementName=Category}" />
+    <ComboBox x:Name="Category"
+              Grid.Row="5" Grid.Column="1"
+              Margin="0,0,0,8"
+              AutomationProperties.AutomationId="activity-category">
+      <ComboBoxItem Content="Research" IsSelected="True" />
+      <ComboBoxItem Content="Court appearance" />
+      <ComboBoxItem Content="Phone call" />
+      <ComboBoxItem Content="Drafting" />
+      <ComboBoxItem Content="Meeting" />
+    </ComboBox>
+
+    <Label Grid.Row="6" Content="Comment — what exactly occurred" Target="{Binding ElementName=Narrative}" />
     <TextBox x:Name="Narrative"
-             AutomationProperties.AutomationId="narrative"
-             Height="64"
+             Grid.Row="6" Grid.Column="1"
+             Margin="0,0,0,8"
              TextWrapping="Wrap"
-             AcceptsReturn="True" />
-    <Button Margin="0,12,0,8"
-            Padding="8"
+             AcceptsReturn="True"
+             VerticalScrollBarVisibility="Auto"
+             AutomationProperties.AutomationId="narrative" />
+
+    <Button x:Name="SaveButton"
+            Grid.Row="7" Grid.Column="1"
+            Margin="0,4,0,8"
+            Padding="8,6"
+            HorizontalAlignment="Left"
             Content="Save time entry"
             AutomationProperties.AutomationId="save-entry"
             Click="Save_Click" />
-    <TextBlock x:Name="TodaysEntries"
-               AutomationProperties.AutomationId="todays-entries"
-               Text="No entries yet." />
-  </StackPanel>
+
+    <TextBlock x:Name="FormError"
+               Grid.Row="8" Grid.Column="1"
+               Margin="0,0,0,8"
+               TextWrapping="Wrap"
+               Foreground="#B42318"
+               AutomationProperties.AutomationId="form-error" />
+
+    <DockPanel Grid.Row="9" Grid.ColumnSpan="2">
+      <TextBlock DockPanel.Dock="Top" Margin="0,0,0,4" Text="Today’s entries" FontWeight="SemiBold" />
+      <ListBox x:Name="TodaysEntries"
+               AutomationProperties.AutomationId="todays-entries" />
+    </DockPanel>
+  </Grid>
 </Window>
