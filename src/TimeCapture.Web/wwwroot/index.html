@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Aderant Expert — Time Capture</title>
+  <link rel="stylesheet" href="/css/app.css" />
+</head>
+<body>
+  <header class="masthead">
+    <p class="eyebrow">Aderant Expert · Auckland demo</p>
+    <h1>Time capture</h1>
+    <p class="lede">Record who worked, which matter, how long, and what happened — so finance can invoice the right client.</p>
+  </header>
+
+  <main>
+    <form id="entry-form" data-testid="entry-form" novalidate>
+      <label class="check">
+        <input type="checkbox" id="pa-mode" data-testid="pa-mode" />
+        Recording as personal assistant
+      </label>
+
+      <div class="field" id="timekeeper-field">
+        <label for="timekeeper">Who the lawyer is</label>
+        <select id="timekeeper" name="timekeeper" data-testid="timekeeper"></select>
+      </div>
+
+      <div class="field">
+        <label for="client-search">Client</label>
+        <input id="client-search" data-testid="client-search" list="client-list" autocomplete="off" placeholder="Search client" />
+        <datalist id="client-list"></datalist>
+        <p class="hint" data-testid="client-chosen"></p>
+      </div>
+
+      <div class="field">
+        <label for="matter-select">Matter</label>
+        <select id="matter-select" data-testid="matter-select" disabled>
+          <option value="">Select a client first</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <div class="field">
+          <label for="duration">Hours (0.1 = 6 minutes)</label>
+          <input id="duration" data-testid="duration" type="number" min="0.1" step="0.1" value="0.5" />
+        </div>
+        <div class="field">
+          <label for="activity-category">Time-activity category</label>
+          <select id="activity-category" data-testid="activity-category"></select>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="narrative">Comment — what exactly occurred</label>
+        <textarea id="narrative" data-testid="narrative" rows="3" required placeholder="Reviewed discovery bundle for hearing prep"></textarea>
+      </div>
+
+      <p class="error" data-testid="form-error" hidden></p>
+
+      <button type="submit" id="save-entry" data-testid="save-entry">Save time entry</button>
+    </form>
+
+    <section class="ledger">
+      <h2>Today’s entries</h2>
+      <p class="hint">Created time is stored in UTC. Duration does not change across offices.</p>
+      <ol id="todays-entries" data-testid="todays-entries"></ol>
+    </section>
+  </main>
+
+  <script src="/js/app.js"></script>
+</body>
+</html>
